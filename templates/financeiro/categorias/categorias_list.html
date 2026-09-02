@@ -1,0 +1,95 @@
+{% extends "_layouts.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block head_title %}
+  Lista Categorias
+{% endblock head_title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center" style="height: 50px;">
+            <h2 class="mb-0">Categorias</h2>
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Saber Mais +
+            </button>
+        </div>
+
+        <div class="collapse mt-3" id="collapseExample">
+            <div class="card card-body">
+                <p>🏷️ <strong>Categorias</strong></p>
+                <p>Organiza suas transações em grupos.</p>
+                <p><strong>Nome:</strong> ex.: Alimentação, Transporte, Salário.</p>
+                <p><strong>Tipo:</strong> define se é Receita (dinheiro entrando) ou Despesa (dinheiro saindo).</p>
+                <p>👉 <strong>Por que usar?</strong> Para identificar de onde vem e para onde vai seu dinheiro, facilitando relatórios e gráficos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
+        <a href="{% url 'criar_categoria' %}" class="btn btn-success">+ Nova Categoria</a>
+        <form method="get" class="d-flex" style="gap: 10px;">
+            <input type="text" name="search" class="form-control" placeholder="Buscar categoria..." value="{{ search }}">
+            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+        </form>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            {% if categorias %}
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Nome</th>
+                            <th>Tipo</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in categorias %}
+                        <tr>
+                            <td>{{ c.nome }}</td>
+                            <td>{{ c.get_tipo_display }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_categoria' c.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                                <a href="{% url 'deletar_categoria' c.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Anterior</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                        {% endif %}
+
+                        <li class="page-item disabled">
+                            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Próxima</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            {% else %}
+                <p class="text-muted">Nenhuma categoria cadastrada ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

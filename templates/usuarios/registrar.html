@@ -1,0 +1,38 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar</title>
+    {% bootstrap_css %}
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; padding: 40px;">
+        <div class="card p-4 shadow" style="width: 600px;">
+            <h2 class="text-center mb-4 text-primary fw-bold">Criar Conta</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button type="submit" class="btn btn-primary w-100">Registrar</button>
+            </form>
+
+            <p class="text-center mt-3">
+                Já tem conta? <a href="{% url 'login' %}">Entrar</a>
+            </p>
+        </div>
+    </div>
+    {% bootstrap_javascript %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% extends "_layouts.html" %}
+{% load django_bootstrap5 %}
+
+{% block head_title %}
+  {{ titulo }}
+{% endblock head_title %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4 shadow" style="width: 400px; max-width: 100%;">
+            <h2 class="text-center mb-4">{{ titulo }}</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <a href="{% url 'metas_list' %}" class="d-flex justify-content-center mt-1">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

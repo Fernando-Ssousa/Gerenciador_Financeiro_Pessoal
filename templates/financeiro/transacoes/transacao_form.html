@@ -1,0 +1,74 @@
+{% extends "_layouts.html" %}
+{% load django_bootstrap5 %}
+
+{% block head_title %}
+  {{ titulo }}
+{% endblock head_title %}
+
+{% block css%}
+    <style>
+        .select-readonly {
+            pointer-events: none;
+            background-color: #e9ecef;
+        }
+    </style>
+{%endblock css%}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center w-100">
+        <div class="card shadow p-4" style="max-width: 30rem; width: 100%;">
+            <h2 class="text-center mb-4">{{ titulo }}</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Salvar</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="{% url 'transacoes_list' %}" class="d-flex justify-content-center">Cancelar</a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const parcelaSelect = document.getElementById('id_parcela');
+            const contaSelect = document.getElementById('id_conta');
+            const categoriaSelect = document.getElementById('id_categoria');
+            const valorInput = document.getElementById('id_valor');
+
+            if (!parcelaSelect || !contaSelect || !categoriaSelect || !valorInput) return;
+
+            function preencherCampos(parcelaId) {
+                if (!parcelaId) {
+                    contaSelect.classList.remove('select-readonly');
+                    categoriaSelect.classList.remove('select-readonly');
+                    valorInput.removeAttribute('readonly');
+                    return;
+                }
+
+                fetch(`/financeiro/api/parcela/${parcelaId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    contaSelect.value = data.conta;
+                    categoriaSelect.value = data.categoria;
+                    valorInput.value = data.valor;
+
+                    contaSelect.classList.add('select-readonly');
+                    categoriaSelect.classList.add('select-readonly');
+                    valorInput.setAttribute('readonly', true);
+                });
+            }
+
+            parcelaSelect.addEventListener('change', function() {
+                preencherCampos(this.value);
+            });
+
+            if (parcelaSelect.value) {
+                preencherCampos(parcelaSelect.value);
+            }
+        });
+    </script>
+{% endblock javascript %}
