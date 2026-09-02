@@ -5,6 +5,7 @@ venv/
 .venv/
 env/
 ENV/
+.env.example
 
 # Python
 __pycache__/
@@ -28,7 +29,6 @@ db.sqlite3-journal
 # Segredos / config local
 .env
 .env.*
-!.env.example
 
 # Repositorio aninhado (projeto separado, tem .git proprio)
 Gerenciador-Financeiro/
