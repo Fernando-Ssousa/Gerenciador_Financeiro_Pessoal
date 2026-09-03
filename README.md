@@ -1,5 +1,7 @@
 # Gerenciador Financeiro Pessoal
 
+[![CI](https://github.com/Fernando-Ssousa/Gerenciador_Financeiro_Pessoal/actions/workflows/ci.yml/badge.svg)](https://github.com/Fernando-Ssousa/Gerenciador_Financeiro_Pessoal/actions/workflows/ci.yml)
+
 Aplicação web em Django para controle de finanças pessoais: contas bancárias, categorias de receita/despesa, transações, parcelas e metas financeiras.
 
 ## Funcionalidades
@@ -87,6 +89,18 @@ Todos os dados são isolados por usuário logado.
    ```
 
 Acesse `http://localhost:8000/` no navegador.
+
+## Testes
+
+O projeto possui testes unitários para os apps `financeiro` e `usuarios` (models, formulários e views). Para rodá-los localmente:
+
+```bash
+python manage.py test
+```
+
+## CI/CD
+
+A cada push ou pull request, um workflow do GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)) instala as dependências, executa os testes automatizados e valida o build do projeto (`collectstatic`).
 
 ## Estrutura do projeto
 
