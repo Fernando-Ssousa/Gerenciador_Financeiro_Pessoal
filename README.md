@@ -105,11 +105,39 @@ A cada push ou pull request, um workflow do GitHub Actions ([.github/workflows/c
 ## Estrutura do projeto
 
 ```
-gerenciador_financeiro/   # Configurações do projeto (settings, urls, wsgi)
-usuarios/                 # Cadastro, login e logout
-financeiro/               # Contas, categorias, transações, parcelas, metas e dashboard
-templates/                # Templates HTML compartilhados
-static/                   # Arquivos estáticos (CSS/JS)
+Gerenciador_Financeiro_Pessoal/
+├── ambiente/                  # Ambiente virtual (NÃO commitar)
+├── gerenciador_financeiro/    # Configurações do projeto
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+├── usuarios/                  # App de cadastro, login e logout
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   ├── admin.py
+│   ├── migrations/
+│   └── tests.py
+├── financeiro/                # App de contas, categorias, transações, parcelas, metas e dashboard
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   ├── admin.py
+│   ├── migrations/
+│   ├── templatetags/
+│   └── tests.py
+├── templates/                  # Templates HTML (Django Templates)
+├── static/                     # Arquivos estáticos (CSS/imagens)
+├── manage.py                   # Utilitário de linha de comando do Django
+├── requirements.txt            # Dependências Python
+├── .env                        # Variáveis de ambiente (NÃO commitar)
+├── .env.example                # Exemplo de variáveis de ambiente
+├── .github/workflows/          # Pipeline de CI (GitHub Actions)
+├── .gitignore                  # Arquivos ignorados pelo Git
+└── README.md                   # Este arquivo
 ```
 
 ## Licença
