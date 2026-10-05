@@ -1,0 +1,10 @@
+.git
+.github
+.env
+ambiente
+db.sqlite3
+__pycache__
+*.pyc
+README.md
+Dockerfile
+.dockerignore
