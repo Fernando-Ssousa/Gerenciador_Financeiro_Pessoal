@@ -1,0 +1,40 @@
+# Ambiente de testes automatizados (usado pelo CI)
+#
+# Uso:
+#   docker compose -f docker-compose.test.yml run --rm tests
+#   docker compose -f docker-compose.test.yml down -v
+#
+# Diferente do compose principal: banco descartável (sem volume nomeado)
+# e usuário root, pois o Django precisa criar o banco "test_*".
+
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: gerenciador_financeiro
+      MARIADB_ROOT_PASSWORD: root-ci
+    tmpfs:
+      - /var/lib/mysql   # dados em memória: mais rápido e sempre limpo
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  tests:
+    build: .
+    command: python manage.py test --noinput -v 2
+    environment:
+      SECRET_KEY: ci-secret-key
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      DB_ENGINE: django.db.backends.mysql
+      DB_NAME: gerenciador_financeiro
+      DB_USER: root
+      DB_PASSWORD: root-ci
+      DB_HOST: db
+      DB_PORT: "3306"
+    depends_on:
+      db:
+        condition: service_healthy
