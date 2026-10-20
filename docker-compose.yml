@@ -2,58 +2,61 @@
 #
 # Uso:
 #   docker compose up -d --build     # sobe tudo em segundo plano
-#   docker compose ps                # status dos serviços
+#   docker compose ps -a             # status dos serviços
 #   docker compose logs -f web       # logs da aplicação
 #   docker compose down              # para e remove containers e redes
 #   docker compose down -v           # remove também o volume do banco
 #
-# Todas as variáveis têm valor padrão (${VAR:-padrao}); para sobrescrever,
-# crie um arquivo .env na raiz do projeto (ele já é ignorado pelo git).
+# As credenciais abaixo são apenas para desenvolvimento/demonstração.
+# Elas ficam fixas aqui de propósito: o .env local do projeto (usado fora
+# do Docker) tem variáveis com os mesmos nomes e não deve interferir.
 
-x-app-env: &app-env
-  SECRET_KEY: ${SECRET_KEY:-troque-esta-chave-em-producao}
-  DEBUG: ${DEBUG:-False}
-  ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,.app.github.dev}
-  CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-https://*.app.github.dev,http://localhost:8000}
+x-db-config: &db-config
   DB_ENGINE: django.db.backends.mysql
-  DB_NAME: ${DB_NAME:-gerenciador_financeiro}
-  DB_USER: ${DB_USER:-financeiro}
-  DB_PASSWORD: ${DB_PASSWORD:-financeiro123}
+  DB_NAME: gerenciador_financeiro
+  DB_USER: financeiro
+  DB_PASSWORD: financeiro123
   DB_HOST: db          # nome do serviço = hostname no DNS interno do Compose
   DB_PORT: "3306"
 
+x-app-env: &app-env
+  <<: *db-config
+  SECRET_KEY: chave-de-desenvolvimento-troque-em-producao
+  DEBUG: "False"
+  ALLOWED_HOSTS: localhost,127.0.0.1,.app.github.dev
+  CSRF_TRUSTED_ORIGINS: https://*.app.github.dev,http://localhost:8000
+
 services:
-  # Banco de dados (MariaDB é compatível com MySQL e com o mysqlclient da imagem)
+  # Banco de dados (MariaDB: compatível com MySQL e com o mysqlclient da imagem)
   db:
     image: mariadb:11.4
     restart: unless-stopped
     environment:
-      MARIADB_DATABASE: ${DB_NAME:-gerenciador_financeiro}
-      MARIADB_USER: ${DB_USER:-financeiro}
-      MARIADB_PASSWORD: ${DB_PASSWORD:-financeiro123}
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root123}
+      MARIADB_DATABASE: gerenciador_financeiro
+      MARIADB_USER: financeiro
+      MARIADB_PASSWORD: financeiro123
+      MARIADB_ROOT_PASSWORD: root123
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
-      - backend
+      - app-network
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 20s
 
   # Container "one-shot": aplica as migrações e encerra
   migrate:
     image: gerenciador-financeiro:latest
-    build: .
     command: python manage.py migrate --noinput
     environment: *app-env
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - backend
+      - app-network
     restart: "no"
 
   # Aplicação Django servida pelo Gunicorn (imagem do Dockerfile da atividade anterior)
@@ -62,7 +65,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${WEB_PORT:-8000}:8000"
     environment: *app-env
     depends_on:
       db:
@@ -70,15 +73,11 @@ services:
       migrate:
         condition: service_completed_successfully
     networks:
-      - frontend
-      - backend
+      - app-network
 
 volumes:
   mariadb_data:
 
 networks:
-  # O banco fica só na rede backend: não é acessível a partir da frontend
-  frontend:
-    driver: bridge
-  backend:
+  app-network:
     driver: bridge

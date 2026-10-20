@@ -7,6 +7,9 @@
 # Diferente do compose principal: banco descartável (sem volume nomeado)
 # e usuário root, pois o Django precisa criar o banco "test_*".
 
+# Nome de projeto próprio: isola containers/redes do docker-compose.yml principal
+name: gerenciador-financeiro-test
+
 services:
   db:
     image: mariadb:11.4
