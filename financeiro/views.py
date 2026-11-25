@@ -127,7 +127,7 @@ class ContaCreateView(LoginRequiredMixin, CreateView):
     template_name = 'financeiro/contas/conta_form.html'
     success_url = reverse_lazy('contas_list')
 
-     def form_valid(self, form):
+    def form_valid(self, form):
         form.instance.usuario = self.request.user
         resposta = super().form_valid(form)
         TRANSACOES.inc()

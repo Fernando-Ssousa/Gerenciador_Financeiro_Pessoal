@@ -11,9 +11,8 @@
 # Copie .env.example para .env e preencha antes de subir.
 
 x-db-config: &db-config
-  DB_ENGINE: django.db.backends.mysql
   DB_NAME: ${DB_NAME:-gerenciador_financeiro}
-  DB_USER: ${DB_USER:-financeiro}
+  DB_USER: financeiro
   DB_PASSWORD: financeiro123
   DB_HOST: db          # nome do serviço = hostname no DNS interno do Compose
   DB_PORT: "3306"
@@ -32,7 +31,7 @@ services:
     restart: unless-stopped
     environment:
       MARIADB_DATABASE: ${DB_NAME:-gerenciador_financeiro}
-      MARIADB_USER: ${DB_USER:-financeiro}
+      MARIADB_USER: financeiro
       MARIADB_PASSWORD: financeiro123
       MARIADB_ROOT_PASSWORD: root123
     volumes:

@@ -39,7 +39,7 @@ COPY --chown=app:app . .
 
 # Variáveis só para o build (collectstatic precisa carregar o settings);
 # NÃO ficam na imagem final de forma útil: em runtime use -e / --env-file.
-RUN SECRET_KEY=build DB_ENGINE=django.db.backends.sqlite3 DB_NAME=x DB_USER=x DB_PASSWORD=x \
+RUN SECRET_KEY=build DB_NAME=x DB_USER=x DB_PASSWORD=x \
     python manage.py collectstatic --noinput \
     && chown -R app:app /app
 
