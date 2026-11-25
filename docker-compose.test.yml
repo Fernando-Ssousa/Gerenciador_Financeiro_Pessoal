@@ -32,7 +32,6 @@ services:
       SECRET_KEY: ci-secret-key
       DEBUG: "False"
       ALLOWED_HOSTS: localhost,127.0.0.1,testserver
-      DB_ENGINE: django.db.backends.mysql
       DB_NAME: gerenciador_financeiro
       DB_USER: root
       DB_PASSWORD: root-ci

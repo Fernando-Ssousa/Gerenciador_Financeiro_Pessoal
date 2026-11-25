@@ -62,10 +62,9 @@ Todos os dados são isolados por usuário logado.
    DEBUG=True
    ALLOWED_HOSTS=localhost,127.0.0.1
 
-   DB_ENGINE=django.db.backends.mysql
    DB_NAME=gerenciador_financeiro
    DB_USER=root
-   DB_PASSWORD=troque-por-uma-senha
+   DB_PASSWORD=root
    DB_HOST=localhost
    DB_PORT=3306
    ```

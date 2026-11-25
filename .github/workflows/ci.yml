@@ -15,10 +15,22 @@ jobs:
       SECRET_KEY: ci-secret-key
       DEBUG: "False"
       ALLOWED_HOSTS: localhost,127.0.0.1
-      DB_ENGINE: django.db.backends.sqlite3
-      DB_NAME: ci_db.sqlite3
-      DB_USER: ci
+      DB_NAME: ci_db
+      DB_USER: root
       DB_PASSWORD: ci
+      DB_HOST: 127.0.0.1
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: ci
+          MYSQL_DATABASE: ci_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pci"
+          --health-interval=5s --health-timeout=5s --health-retries=20
 
     steps:
       - name: Checkout código
