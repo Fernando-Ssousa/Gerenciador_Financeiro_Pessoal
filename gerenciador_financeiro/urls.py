@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('usuarios.urls')),
     path('financeiro/', include('financeiro.urls')),
+    path('', include('django_prometheus.urls')), 
 ]
 

@@ -7,14 +7,13 @@
 #   docker compose down              # para e remove containers e redes
 #   docker compose down -v           # remove também o volume do banco
 #
-# As credenciais abaixo são apenas para desenvolvimento/demonstração.
-# Elas ficam fixas aqui de propósito: o .env local do projeto (usado fora
-# do Docker) tem variáveis com os mesmos nomes e não deve interferir.
+# Os segredos (senhas, SECRET_KEY) vêm do arquivo .env (fora do git).
+# Copie .env.example para .env e preencha antes de subir.
 
 x-db-config: &db-config
   DB_ENGINE: django.db.backends.mysql
-  DB_NAME: gerenciador_financeiro
-  DB_USER: financeiro
+  DB_NAME: ${DB_NAME:-gerenciador_financeiro}
+  DB_USER: ${DB_USER:-financeiro}
   DB_PASSWORD: financeiro123
   DB_HOST: db          # nome do serviço = hostname no DNS interno do Compose
   DB_PORT: "3306"
@@ -23,7 +22,7 @@ x-app-env: &app-env
   <<: *db-config
   SECRET_KEY: chave-de-desenvolvimento-troque-em-producao
   DEBUG: "False"
-  ALLOWED_HOSTS: localhost,127.0.0.1,.app.github.dev
+  ALLOWED_HOSTS: localhost,127.0.0.1,web,.app.github.dev   # "web": Host usado pelo Prometheus
   CSRF_TRUSTED_ORIGINS: https://*.app.github.dev,http://localhost:8000
 
 services:
@@ -32,8 +31,8 @@ services:
     image: mariadb:11.4
     restart: unless-stopped
     environment:
-      MARIADB_DATABASE: gerenciador_financeiro
-      MARIADB_USER: financeiro
+      MARIADB_DATABASE: ${DB_NAME:-gerenciador_financeiro}
+      MARIADB_USER: ${DB_USER:-financeiro}
       MARIADB_PASSWORD: financeiro123
       MARIADB_ROOT_PASSWORD: root123
     volumes:
@@ -74,10 +73,65 @@ services:
         condition: service_completed_successfully
     networks:
       - app-network
+      - monitoring
+
+  # Coleta as métricas: /metrics do app (django-prometheus) e dos containers (cAdvisor)
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - web
+      - cadvisor
+    networks:
+      - monitoring
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - monitoring
+
+  # Dashboards e alertas por e-mail (tudo provisionado por arquivos)
+  grafana:
+    image: grafana/grafana:11.2.0
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com:587}
+      GF_SMTP_USER: ${SMTP_USER:-}
+      GF_SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      GF_SMTP_FROM_ADDRESS: ${SMTP_USER:-grafana@localhost}
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-alerta@example.com}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
 
 volumes:
   mariadb_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   app-network:
+    driver: bridge
+  monitoring:
     driver: bridge

@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # métricas da aplicação (/metrics, via django-prometheus)
+  - job_name: financeiro-app
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["web:8000"]
+
+  # métricas dos containers (CPU, memória, rede...)
+  - job_name: cadvisor
+    static_configs:
+      - targets: ['cadvisor:8080']

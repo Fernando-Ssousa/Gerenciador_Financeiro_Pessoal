@@ -10,6 +10,11 @@ from django.http import JsonResponse
 from django.views import View
 from .models import Conta, Categoria, Parcela, Transacao, MetaFinanceira
 from .forms import ContaForm, CategoriaForm, ParcelaForm, TransacaoForm, MetaFinanceiraForm
+from prometheus_client import Counter
+
+
+TRANSACOES = Counter('financeiro_transacoes_criadas_total', 'Transações criadas')
+
 
 # Dashboard
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -122,9 +127,11 @@ class ContaCreateView(LoginRequiredMixin, CreateView):
     template_name = 'financeiro/contas/conta_form.html'
     success_url = reverse_lazy('contas_list')
 
-    def form_valid(self, form):
+     def form_valid(self, form):
         form.instance.usuario = self.request.user
-        return super().form_valid(form)
+        resposta = super().form_valid(form)
+        TRANSACOES.inc()
+        return resposta
 
 class ContaUpdateView(LoginRequiredMixin, UpdateView):
     model = Conta

@@ -10,3 +10,4 @@ sqlparse==0.5.3
 tzdata==2025.2
 gunicorn==23.0.0
 whitenoise==6.9.0
+django-prometheus==2.3.1
