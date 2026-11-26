@@ -113,7 +113,7 @@ services:
       GF_SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com:587}
       GF_SMTP_USER: ${SMTP_USER:-}
       GF_SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      GF_SMTP_FROM_ADDRESS: ${SMTP_USER:-grafana@localhost}
+      GF_SMTP_FROM_ADDRESS: ${SMTP_USER:-grafana@example.com}
       ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-alerta@example.com}
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
