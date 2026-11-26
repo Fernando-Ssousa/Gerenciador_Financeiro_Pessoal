@@ -1,12 +1,11 @@
-cat > scripts/k8s-up.sh <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 minikube status >/dev/null 2>&1 || minikube start --driver=docker --memory=2048
 
-eval "$(minikube docker-env)"
 docker build -t gerenciador-financeiro:latest .
+minikube image load gerenciador-financeiro:latest
 
 G=monitoring/grafana
 cm() { kubectl create configmap "$@" --dry-run=client -o yaml | kubectl apply -f -; }
@@ -37,5 +36,3 @@ echo "Acesso (Codespaces):"
 echo "  kubectl port-forward svc/financeiro-service 8080:80"
 echo "  kubectl port-forward svc/grafana 3000:3000"
 echo "  kubectl port-forward svc/prometheus 9090:9090"
-EOF
-chmod +x scripts/k8s-up.sh

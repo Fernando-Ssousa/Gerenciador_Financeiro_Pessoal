@@ -1,4 +1,3 @@
-cat > k8s/10-mariadb.yaml <<'EOF'
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -59,4 +58,3 @@ spec:
   selector: {app: mariadb}
   ports:
     - port: 3306
-EOF

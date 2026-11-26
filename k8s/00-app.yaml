@@ -1,4 +1,3 @@
-cat > k8s/00-app.yaml <<'EOF'
 apiVersion: v1
 kind: Secret
 metadata:
@@ -94,4 +93,3 @@ spec:
     - port: 80
       targetPort: 8000
       nodePort: 30080
-EOF
