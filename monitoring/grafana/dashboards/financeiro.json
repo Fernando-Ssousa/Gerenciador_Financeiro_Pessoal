@@ -115,7 +115,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(django_http_responses_total_by_status_total{status=~\"5..\"}[5m])) / sum(rate(django_http_responses_total_by_status_total[5m]))",
+          "expr": "(sum(rate(django_http_responses_total_by_status_total{status=~\"5..\"}[5m])) or vector(0)) / sum(rate(django_http_responses_total_by_status_total[5m]))",
           "legendFormat": "",
           "refId": "A"
         }
@@ -309,7 +309,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[1m]))",
+          "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])) or label_replace(sum(rate(container_cpu_usage_seconds_total{id=\"/docker\"}[1m])), \"name\", \"docker (todos os containers)\", \"\", \"\")",
           "legendFormat": "{{name}}",
           "refId": "A"
         }
@@ -343,7 +343,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (name) (container_memory_working_set_bytes{name!=\"\"})",
+          "expr": "sum by (name) (container_memory_working_set_bytes{name!=\"\"}) or label_replace(sum(container_memory_working_set_bytes{id=\"/docker\"}), \"name\", \"docker (todos os containers)\", \"\", \"\")",
           "legendFormat": "{{name}}",
           "refId": "A"
         }

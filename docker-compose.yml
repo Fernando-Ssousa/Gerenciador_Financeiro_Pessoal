@@ -22,7 +22,7 @@ x-app-env: &app-env
   SECRET_KEY: chave-de-desenvolvimento-troque-em-producao
   DEBUG: "False"
   ALLOWED_HOSTS: localhost,127.0.0.1,web,.app.github.dev   # "web": Host usado pelo Prometheus
-  CSRF_TRUSTED_ORIGINS: https://*.app.github.dev,http://localhost:8000
+  CSRF_TRUSTED_ORIGINS: https://*.app.github.dev,http://localhost:8000,https://localhost:8000
 
 services:
   # Banco de dados (MariaDB: compatível com MySQL e com o mysqlclient da imagem)
