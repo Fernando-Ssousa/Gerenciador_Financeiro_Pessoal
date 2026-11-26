@@ -129,9 +129,7 @@ class ContaCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user
-        resposta = super().form_valid(form)
-        TRANSACOES.inc()
-        return resposta
+        return super().form_valid(form)
 
 class ContaUpdateView(LoginRequiredMixin, UpdateView):
     model = Conta
@@ -287,7 +285,9 @@ class TransacaoCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user
-        return super().form_valid(form)
+        resposta = super().form_valid(form)
+        TRANSACOES.inc()
+        return resposta
 
 class TransacaoUpdateView(LoginRequiredMixin, UpdateView):
     model = Transacao
